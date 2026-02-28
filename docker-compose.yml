@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+
+  api:
+    build: .
+    command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    environment:
+      - FEATHERLESS_API_KEY=${FEATHERLESS_API_KEY}
+      - FEATHERLESS_API_URL=${FEATHERLESS_API_URL:-https://api.featherless.ai/v1}
+      - FEATHERLESS_MODEL=${FEATHERLESS_MODEL:-meta-llama/Llama-3.1-8B-Instruct}
+    volumes:
+      - ./artifacts:/app/artifacts:ro
+    depends_on:
+      - postgres
+
+  dashboard:
+    build: .
+    command: streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    environment:
+      - FEATHERLESS_API_KEY=${FEATHERLESS_API_KEY}
+    depends_on:
+      - api
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB:       aegis_omni
+      POSTGRES_USER:     aegis
+      POSTGRES_PASSWORD: aegis_secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+volumes:
+  pg_data:
