@@ -175,14 +175,4 @@ aegis-omni/
 ├── docker-compose.yml
 ├── requirements.txt
 └── .env.example
-```
 
----
-
-## Hackathon Notes
-
-- **Dataset assumed local** at `data/sepsis_dataset.csv`
-- **No Kafka** required — direct CSV pipeline
-- **Featherless AI** key is optional; template fallback always works
-- **Artifacts directory** must be populated before API starts
-- **14-hour scope** — federated sim is simplified FedAvg, not production Flower
